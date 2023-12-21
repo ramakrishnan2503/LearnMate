@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video</title>
+    <link rel="stylesheet" href="./../static/css/style2.css">
+    <!-- <style>
+        .tab-content {
+            display: none;
+        }
+    </style> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <header id="header">
+        <img src="/learn-mate-high-resolution-logo-black-transparent (1).png" id="logo" alt="LearnMate logo" width="200" href="newhome.html">
+    </header>
+    <h1>YouTube Video Player</h1>
+
+    <div id="videoBox">
+        <form id="videoForm" >
+            <label for="videoUrl">Enter YouTube Video URL:</label>
+            <input type="text" id="videoUrl" name="videoUrl" autofocus required>
+            <br>
+            <button type="button" onclick="loadVideo()">Load Video</button>
+        </form>
+
+        <div id="videoPlayer"></div>
+    </div>
+    
+    <div id="videoContainer">
+        <iframe id="youtubeVideo" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+    
+    <!-- <div id="tabContainer" style="display: none;">
+        <button onclick="openTab('transcription')">Transcription</button>
+        <button onclick="openTab('summary')">Summary</button>
+        <button onclick="openTab('quiz')">Quiz</button>
+    </div> -->
+
+    <div id="transcription" class="tab-content">
+        <h3>Transcription</h3>
+        <p id="transcriptionContent">Transcription content </p>
+    </div>
+
+    <div id="summary" class="tab-content">
+        <h3>Summary</h3>
+        <p id="summaryContent">Summary content </p>
+    </div>
+
+    <div id="quiz" class="tab-content">
+        <h3>Quiz Content</h3>
+        <p id="quizContent">Quiz content </p>
+    </div>
+
+    <div id="search" class="tab-content">
+        <h3>Search here</h3>
+        <form>
+            <input id="searchContent" name="searchContent" type="text">
+            <input type="button" onclick="fn_searchContent()" value="SEARCH">
+        </form>
+    </div>
+
+    <script>
+        var time_stamp_content;
+        function loadVideo() {
+            var videoUrl = document.getElementById('videoUrl').value;
+            var videoId = getYouTubeVideoId(videoUrl);
+            var videoForm = document.getElementById('videoForm');
+            // document.getElementById('transcription').style.display = 'block'; 
+            // document.getElementById('summary').style.display = 'block';
+            // document.getElementById('quiz').style.display = 'block';
+            $.ajax({
+                method : 'POST',
+                url : "/video",
+                data : {
+                    url:videoUrl,
+                },
+                success:function(response){
+                    console.log(response.response)
+                    $("#transcriptionContent").text(response.response.transcript)
+                    $("#summaryContent").text(response.response.summary)
+                    $("#quizContent").text(response.response.quiz)
+                    time_stamp_content = response.response.timestamped_transcript
+                },
+                error:function(error){
+                    log("Error")
+                }
+            })
+            videoForm.style.display = "none";
+            if (videoId) {
+                var embedCode = `https://www.youtube.com/embed/${videoId}`;
+                document.getElementById('youtubeVideo').src = embedCode;
+            } else {
+                alert('Invalid YouTube Video URL');
+            }
+        }
+        
+        function fn_searchContent(){
+            var videoUrl = document.getElementById('videoUrl').value;
+            var searchbar = document.getElementById('searchContent').value;
+            var timestamps = []
+            $.ajax({
+                method:'POST',
+                url : `/search/${searchbar}`,
+                data : {
+                    url:videoUrl
+                },
+                success:function(data){
+                    console.log(response.list)
+                },
+                error:function(error){
+                    console.log(response.message)
+                }
+            })
+            console.log(timestamps)
+        }
+
+        function getYouTubeVideoId(url) {
+            
+            var videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return videoIdMatch ? videoIdMatch[1] : null;
+        }
+
+
+
+
+        // function openTab(tabName) {
+        //     var videoUrl = document.getElementById('videoUrl').value;
+        //     // var i, tabContent;
+        //     // tabContent = document.getElementsByClassName('tab-content');
+        //     if (tabName === "transcription"){
+        //         taburl = "/transcript"
+        //     } else if(tabName === "summary"){
+        //         taburl = "/summary"
+        //     } else if (tabName === "quiz"){
+        //         taburl = "/quiz"
+        //     }
+        //     $.ajax({
+        //         method : 'POST',
+        //         url : taburl,
+        //         data : {
+        //             url:videoUrl,
+        //         },
+        //         success:function(response){
+        //             console.log(response.response)
+        //             $("#transcription").text(response.response)
+        //         },
+        //         error:function(error){
+        //             log("Error")
+        //         }
+        //     })
+        //     // for (i = 0; i < tabContent.length; i++) {
+        //     //     tabContent[i].style.display = 'none';
+        //     // }
+        //     // document.getElementById(tabName).style.display = 'block';
+        // }
+    </script>
+
+</body>
+</html>

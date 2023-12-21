@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#logo {
+    display: block;
+    margin: 10 auto;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+}
+button {
+    background-color: #283747;
+    color: #ecf0f1;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+#videoUrl
+{
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin:  0px auto;
+}
+#videoPlayer {
+    margin-top: 20px;   
+}
+
+#videoContainer {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; 
+    overflow: hidden;
+}
+
+#youtubeVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#videoInfo {
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+#summary,
+#transcription,
+#quiz{
+    flex: 10;
+    padding: 30px;
+    box-sizing:border-box;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
