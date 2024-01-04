@@ -5,74 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Video</title>
     <link rel="stylesheet" href="./../static/css/style2.css">
-    <!-- <style>
-        .tab-content {
-            display: none;
-        }
-    </style> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+    <link rel="icon" type="image/x-icon" href="./../static/Images/favicon.ico">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-
+    <br>
     <header id="header">
-        <img src="/learn-mate-high-resolution-logo-black-transparent (1).png" id="logo" alt="LearnMate logo" width="200" href="newhome.html">
+        <img src="./../static/Images/learnlogo.png" id="logo" alt="LearnMate logo" width="200" href="newhome.html">
     </header>
-    <h1>YouTube Video Player</h1>
 
+    
+    <br><br>
+    <br><br><br><br><br>
     <div id="videoBox">
         <form id="videoForm" >
-            <label for="videoUrl">Enter YouTube Video URL:</label>
+            <label for="videoUrl"><h4>Enter YouTube Video URL:</h4></label>
             <input type="text" id="videoUrl" name="videoUrl" autofocus required>
             <br>
             <button type="button" onclick="loadVideo()">Load Video</button>
         </form>
-
         <div id="videoPlayer"></div>
     </div>
     
     <div id="videoContainer">
         <iframe id="youtubeVideo" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
     </div>
+    <div id="afterlogincontent" style="display: none;">
+        <div id="search" class="tab-content" style="display: flex;justify-content: center;">
+            <form>
+                <h3>Search here</h3>
+                <input id="searchContent" name="searchContent" type="text">
+                <input type="button" onclick="fn_searchContent()" value="SEARCH">
+            </form>
+        </div>
+        <br><br>
+        <div id="searchContentsResult"></div>
     
-    <!-- <div id="tabContainer" style="display: none;">
-        <button onclick="openTab('transcription')">Transcription</button>
-        <button onclick="openTab('summary')">Summary</button>
-        <button onclick="openTab('quiz')">Quiz</button>
-    </div> -->
-
-    <div id="transcription" class="tab-content">
-        <h3>Transcription</h3>
-        <p id="transcriptionContent">Transcription content </p>
+        <br><br><br>
+        <div id="transcription" class="tab-content">
+            <h3>Transcription</h3>
+            <p id="transcriptionContent">Transcription content </p>
+        </div>
+    
+        <div id="summary" class="tab-content">
+            <h3>Summary</h3>
+            <p id="summaryContent">Summary content </p>
+        </div>
+    
+        <div id="quiz" class="tab-content">
+            <h3>Quiz Content</h3>
+            <p id="quizContent">Quiz content </p>
+        </div>    
     </div>
-
-    <div id="summary" class="tab-content">
-        <h3>Summary</h3>
-        <p id="summaryContent">Summary content </p>
-    </div>
-
-    <div id="quiz" class="tab-content">
-        <h3>Quiz Content</h3>
-        <p id="quizContent">Quiz content </p>
-    </div>
-
-    <div id="search" class="tab-content">
-        <h3>Search here</h3>
-        <form>
-            <input id="searchContent" name="searchContent" type="text">
-            <input type="button" onclick="fn_searchContent()" value="SEARCH">
-        </form>
-    </div>
-
+    <br><br><br><br>
+    <footer>
+        <div>
+            <a href="/"><img src="./../static/Images/learnlogo.png"  id="logofooter" alt="LearnMate logo" height="50" width="100" ></a>
+            <h5>Disclaimer:</h5> This is intended to be a tech demo. All rights belong to the original creator.
+        <p style="color: black;">
+            © 2023 LearnMate | Created by Ramakrishnan B
+        </p>  
+        </div> 
+    </footer> 
+ 
     <script>
         var time_stamp_content;
         function loadVideo() {
+            
+            $('#transcriptionContent').html("<p class='loading-dots'>Loading ...</p>");
+            $('#summaryContent').html("<p class='loading-dots'>Loading ...</p>");
+            $('#quizContent').html("<p class='loading-dots'>Loading ...</p>");
+
             var videoUrl = document.getElementById('videoUrl').value;
             var videoId = getYouTubeVideoId(videoUrl);
             var videoForm = document.getElementById('videoForm');
-            // document.getElementById('transcription').style.display = 'block'; 
-            // document.getElementById('summary').style.display = 'block';
-            // document.getElementById('quiz').style.display = 'block';
+            document.getElementById('afterlogincontent').style.display = 'block';
             $.ajax({
                 method : 'POST',
                 url : "/video",
@@ -80,10 +87,25 @@
                     url:videoUrl,
                 },
                 success:function(response){
-                    console.log(response.response)
                     $("#transcriptionContent").text(response.response.transcript)
                     $("#summaryContent").text(response.response.summary)
-                    $("#quizContent").text(response.response.quiz)
+                    var quizes = response.response.quiz
+                    
+                    var length = Object.keys(quizes).length
+                    $("#quizContent").html("<p></p>");
+                    for (var i=1;i<length+1;i++){
+                        var curr_quiz = quizes[`quiz${i}`]
+                        console.log(curr_quiz)
+                        var options_display = ''
+                        for(var j=0;j<curr_quiz['options'].length;j++){
+                            options_display += (j+1+')'+curr_quiz['options'][j]+' <br/>')
+                        }
+                        $("#quizContent").append(
+                        //    ' "<p>"+quiz[i]["question"]+"<br>"+quiz[i]["options"]+"<br>"+quiz[i]["answer"]+"<br></p>"  '
+                        '   <p id="'+i+'"><h5>Question'+i+' : '+curr_quiz["question"]+'</h5><p>'+options_display+'</p><p>Answer : '+curr_quiz["answer"]+'</p></p>'
+                        )
+                    }
+
                     time_stamp_content = response.response.timestamped_transcript
                 },
                 error:function(error){
@@ -100,9 +122,11 @@
         }
         
         function fn_searchContent(){
+            $('#searchContentsResult')
             var videoUrl = document.getElementById('videoUrl').value;
             var searchbar = document.getElementById('searchContent').value;
             var timestamps = []
+            $("#searchContentsResult").empty()
             $.ajax({
                 method:'POST',
                 url : `/search/${searchbar}`,
@@ -110,54 +134,38 @@
                     url:videoUrl
                 },
                 success:function(data){
-                    console.log(response.list)
+                    var Contents = data.Content
+                    var videoId = getYouTubeVideoId(videoUrl);
+                    if(Contents.length === 0){
+                        $("#searchContentsResult").append(
+                            "<p>No results found</p>"
+                        )
+                    }else{
+                        for (var i = 0; i < Contents.length; i++) {
+                            console.log(Contents[i][1]);
+                            var full = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&start=" + Math.floor(Contents[i][1])+"&mute=1";
+                            console.log(full);
+                            var encodedFull = encodeURIComponent(full);
+                            $('#searchContentsResult').append(
+                                '<button class="SearchResults" onclick="ChangeTimeOnYoutube(\'' + encodedFull + '\')" id=' + i + ' target=_blank><p>Content:' + Contents[i][0] + '</p><p>Time:' + Contents[i][1] + '</p></button> <br/>'
+                            );
+                        }
+                    }
                 },
                 error:function(error){
                     console.log(response.message)
                 }
             })
-            console.log(timestamps)
+        }
+        function ChangeTimeOnYoutube(embedCode){
+            var decodedUrl = decodeURIComponent(embedCode);
+            document.getElementById('youtubeVideo').src = decodedUrl;
         }
 
-        function getYouTubeVideoId(url) {
-            
+        function getYouTubeVideoId(url) {   
             var videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
             return videoIdMatch ? videoIdMatch[1] : null;
         }
-
-
-
-
-        // function openTab(tabName) {
-        //     var videoUrl = document.getElementById('videoUrl').value;
-        //     // var i, tabContent;
-        //     // tabContent = document.getElementsByClassName('tab-content');
-        //     if (tabName === "transcription"){
-        //         taburl = "/transcript"
-        //     } else if(tabName === "summary"){
-        //         taburl = "/summary"
-        //     } else if (tabName === "quiz"){
-        //         taburl = "/quiz"
-        //     }
-        //     $.ajax({
-        //         method : 'POST',
-        //         url : taburl,
-        //         data : {
-        //             url:videoUrl,
-        //         },
-        //         success:function(response){
-        //             console.log(response.response)
-        //             $("#transcription").text(response.response)
-        //         },
-        //         error:function(error){
-        //             log("Error")
-        //         }
-        //     })
-        //     // for (i = 0; i < tabContent.length; i++) {
-        //     //     tabContent[i].style.display = 'none';
-        //     // }
-        //     // document.getElementById(tabName).style.display = 'block';
-        // }
     </script>
 
 </body>
