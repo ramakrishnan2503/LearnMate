@@ -30,7 +30,7 @@ def search(search:str):
         # print(search)
         # print(url)
         result = main.get_time_stamp(url=url, search=search)
-        # List = ['some content', 'shit']
+        # List = ['some content', '***']
         return jsonify({"status": True, "Content": result})
     except Exception as e:
         return jsonify({"status": False, "message": f"Error:{e}"})
