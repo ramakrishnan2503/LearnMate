@@ -35,7 +35,6 @@ def get_video_transcript(video_url):
 
 
 def format_transcript(transcript):
-    # print("Something")
     formatted_transcript = ""
     timestamped_transcript = []
     for entry in transcript:
