@@ -19,8 +19,8 @@ Revolutionize your learning journey with LearnMate, a cutting-edge platform desi
 Embark on your personalized learning journey with LearnMate:
 
 1. Clone the repository: `git clone https://github.com/ramakrishnan2503/LearnMate.git`
-2. Install dependencies: `npm install`
-3. Run the application: `npm start`
+2. Install dependencies: `pip install -r requirement.txt`
+3. Run the application: `python3 app.py`
 
 ## Usage
 
